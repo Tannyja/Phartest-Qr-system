@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rx Dashboard — Premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #050508;
+    --canvas:    #f4f3ef;
+    --surface:   #ffffff;
+    --surface-2: #fafaf6;
+    --ink:       #0a0a0f;
+    --ink-2:     #383840;
+    --muted:     #888896;
+    --line:      #e8e7e0;
+    --line-2:    #f0efe8;
+    --accent:    #4f46e5;
+    --accent-2:  #7c3aed;
+    --hot:       #ef4444;
+    --warm:      #f59e0b;
+    --green:     #10b981;
+    --cyan:      #06b6d4;
+
+    --grad-1: linear-gradient(135deg, #4f46e5 0%, #7c3aed 45%, #ec4899 100%);
+    --grad-2: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    --grad-soft: linear-gradient(135deg, #f0f0ff 0%, #fff0f9 100%);
+    --grad-warm: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    --grad-dark: linear-gradient(180deg, #0a0a14 0%, #12121e 100%);
+    --grad-card: linear-gradient(145deg, #ffffff 0%, #f8f8fc 100%);
+
+    --shadow-xs: 0 1px 2px rgba(10,10,20,.04);
+    --shadow-sm: 0 2px 8px rgba(10,10,20,.06), 0 1px 2px rgba(10,10,20,.04);
+    --shadow-md: 0 6px 20px rgba(10,10,20,.08), 0 2px 6px rgba(10,10,20,.04);
+    --shadow-lg: 0 16px 48px rgba(10,10,20,.12), 0 4px 12px rgba(10,10,20,.06);
+    --shadow-xl: 0 24px 64px rgba(10,10,20,.16), 0 8px 20px rgba(10,10,20,.08);
+    --shadow-glow: 0 8px 32px rgba(79,70,229,.30), 0 2px 8px rgba(79,70,229,.15);
+    --shadow-glow-green: 0 8px 32px rgba(16,185,129,.25);
+    --shadow-glow-warm: 0 8px 32px rgba(245,158,11,.25);
+
+    --radius: 20px;
+    --radius-sm: 12px;
+    --radius-lg: 28px;
+    --radius-xl: 36px;
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    display: flex; min-height: 100vh;
+    background:
+      radial-gradient(1400px 700px at 90% -15%, rgba(124,58,237,.08), transparent 55%),
+      radial-gradient(1000px 600px at -15% 110%, rgba(79,70,229,.06), transparent 55%),
+      radial-gradient(600px 400px at 60% 50%, rgba(6,182,212,.03), transparent 60%),
+      var(--canvas);
+    color: var(--ink);
+    font-family: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -.01em;
+  }
+
+  /* ══════════════════ KEYFRAMES ══════════════════ */
+  @keyframes fadeUp    { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+  @keyframes fadeDown  { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:none} }
+  @keyframes fadeIn    { from{opacity:0} to{opacity:1} }
+  @keyframes fadeLeft  { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
+  @keyframes pop       { 0%{transform:scale(.93);opacity:0} 55%{transform:scale(1.03)} 100%{transform:scale(1);opacity:1} }
+  @keyframes popBig    { 0%{transform:scale(.85);opacity:0} 60%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }
+  @keyframes pulseSoft { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.9)} }
+  @keyframes pulseRing { 0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)} 70%{box-shadow:0 0 0 14px rgba(16,185,129,0)} 100%{box-shadow:0 0 0 0 rgba(16,185,129,0)} }
+  @keyframes pulseAccent { 0%{box-shadow:0 0 0 0 rgba(79,70,229,.5)} 70%{box-shadow:0 0 0 10px rgba(79,70,229,0)} 100%{box-shadow:0 0 0 0 rgba(79,70,229,0)} }
+  @keyframes shimmer   { 0%{background-position:-600px 0} 100%{background-position:600px 0} }
+  @keyframes toastIn   { from{opacity:0;transform:translateX(-50%) translateY(-16px) scale(.94)} to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)} }
+  @keyframes toastOut  { to{opacity:0;transform:translateX(-50%) translateY(-12px) scale(.95)} }
+  @keyframes spin      { to{transform:rotate(360deg)} }
+  @keyframes float     { 0%,100%{transform:translateY(0) rotate(0deg)} 33%{transform:translateY(-5px) rotate(.5deg)} 66%{transform:translateY(-2px) rotate(-.5deg)} }
+  @keyframes floatBig  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  @keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+  @keyframes slideIn   { from{transform:translateX(-100%);opacity:0} to{transform:none;opacity:1} }
+  @keyframes countUp   { from{transform:scale(.7);opacity:0} to{transform:scale(1);opacity:1} }
+  @keyframes borderPulse { 0%,100%{border-color:rgba(79,70,229,.3)} 50%{border-color:rgba(79,70,229,.8)} }
+  @keyframes bgShimmer { 0%{opacity:.5} 50%{opacity:1} 100%{opacity:.5} }
+  @keyframes notifBounce { 0%,100%{transform:scale(1)} 30%{transform:scale(1.3)} 60%{transform:scale(.9)} }
+  @keyframes orbFloat  { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(20px,-15px) scale(1.05)} 66%{transform:translate(-10px,10px) scale(.97)} }
+  @keyframes scanLine  { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+  @keyframes glowPulse { 0%,100%{box-shadow:var(--shadow-glow)} 50%{box-shadow:0 12px 48px rgba(79,70,229,.45),0 4px 12px rgba(79,70,229,.25)} }
+  @keyframes numFlip   { 0%{transform:translateY(8px);opacity:0} 100%{transform:none;opacity:1} }
+  @keyframes tagSlide  { from{transform:translateX(8px);opacity:0} to{transform:none;opacity:1} }
+  @keyframes checkDraw { from{stroke-dashoffset:24} to{stroke-dashoffset:0} }
+  @keyframes dispenseGlow { 0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,0)} 50%{box-shadow:0 0 24px 4px rgba(245,158,11,.25)} }
+  @keyframes rowEnter  { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:none} }
+
+  .fade      { animation: fadeUp  .5s cubic-bezier(.2,.8,.2,1) both; }
+  .fade-in   { animation: fadeIn  .3s ease both; }
+  .fade-left { animation: fadeLeft .35s cubic-bezier(.2,.8,.2,1) both; }
+  .pop       { animation: pop .4s cubic-bezier(.2,.9,.3,1.25) both; }
+  .pop-big   { animation: popBig .5s cubic-bezier(.15,.9,.3,1.3) both; }
+
+  .stagger > * { animation: fadeUp .5s cubic-bezier(.2,.8,.2,1) both; }
+  .stagger > *:nth-child(1){animation-delay:.04s}
+  .stagger > *:nth-child(2){animation-delay:.09s}
+  .stagger > *:nth-child(3){animation-delay:.14s}
+  .stagger > *:nth-child(4){animation-delay:.19s}
+  .stagger > *:nth-child(5){animation-delay:.24s}
+  .stagger > *:nth-child(6){animation-delay:.29s}
+  .stagger > *:nth-child(7){animation-delay:.34s}
+  .stagger > *:nth-child(8){animation-delay:.39s}
+
+  /* ══════════════════ INPUTS ══════════════════ */
+  input, button { font-family: inherit; }
+  .inp {
+    width: 100%; padding: 14px 18px;
+    border: 1.5px solid var(--line);
+    border-radius: 14px; font-size: 14px;
+    background: #fff; outline: none;
+    color: var(--ink); transition: all .2s ease;
+    font-weight: 500;
+    box-shadow: var(--shadow-xs);
+  }
+  .inp::placeholder { color: #c0c0cc; font-weight: 400; }
+  .inp:hover { border-color: #d0d0c8; background: #fefefe; }
+  .inp:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(79,70,229,.10), var(--shadow-sm);
+    background: #fff;
+  }
+
+  /* ══════════════════ BUTTONS ══════════════════ */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    border: none; cursor: pointer; font-weight: 700; letter-spacing: -.01em;
+    transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .2s ease, background .2s ease, opacity .15s ease;
+    will-change: transform; user-select: none; position: relative; overflow: hidden;
+  }
+  .btn::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 60%);
+    pointer-events: none; opacity: 0;
+    transition: opacity .2s ease;
+  }
+  .btn:hover::after { opacity: 1; }
+  .btn:active { transform: translateY(1px) scale(.98); }
+
+  .btn-primary {
+    background: var(--ink); color: #fff;
+    border-radius: 14px; padding: 13px 24px; font-size: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-primary:hover { background: #1c1c28; box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+  .btn-gradient {
+    background: var(--grad-1); background-size: 200% 200%;
+    color: #fff; border-radius: 14px; padding: 14px 24px; font-size: 14px;
+    box-shadow: var(--shadow-glow);
+    animation: gradShift 6s ease infinite, glowPulse 3s ease-in-out infinite;
+  }
+  .btn-gradient:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(79,70,229,.4), 0 4px 12px rgba(79,70,229,.2); }
+
+  .btn-outline {
+    background: #fff; color: var(--ink);
+    border: 1.5px solid var(--line);
+    border-radius: 12px; padding: 12px 20px; font-size: 13px; font-weight: 600;
+    box-shadow: var(--shadow-xs);
+  }
+  .btn-outline:hover { border-color: var(--ink); background: #f8f8f4; transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .btn-outline:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+
+  .btn-chip {
+    background: var(--ink); color: #fff;
+    border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    transition: all .18s cubic-bezier(.2,.8,.2,1);
+  }
+  .btn-chip:hover { background: #2a2a38; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+  .btn-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff; border-radius: 14px; padding: 13px 22px; font-size: 13.5px;
+    box-shadow: var(--shadow-glow-green);
+  }
+  .btn-success:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(16,185,129,.35); }
+
+  /* ══════════════════ CARDS ══════════════════ */
+  .card {
+    background: var(--grad-card);
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,.9);
+    padding: 26px;
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.8);
+    transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease, border-color .2s ease;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(145deg, rgba(255,255,255,.6) 0%, transparent 50%);
+    pointer-events: none; border-radius: inherit;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,.9);
+    border-color: rgba(79,70,229,.1);
+  }
+
+  .glass {
+    background: rgba(255,255,255,.65);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255,255,255,.7);
+    box-shadow: 0 8px 32px rgba(10,10,20,.08);
+  }
+
+  /* ══════════════════ TAGS ══════════════════ */
+  .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 11px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; letter-spacing: .15px;
+    border: 1px solid transparent;
+    animation: tagSlide .3s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .tag::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+
+  .tag-pending  { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+  .tag-pending::before  { background: #f97316; animation: pulseSoft 1.6s ease infinite; }
+  .tag-assigned { background: #eef2ff; color: #4338ca; border-color: #c7d2fe; }
+  .tag-assigned::before { background: var(--accent); animation: pulseAccent 1.6s ease-out infinite; }
+  .tag-done     { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+  .tag-done::before     { background: var(--green); }
+  .tag-waiting  { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+  .tag-waiting::before  { background: #f97316; animation: pulseSoft 1.6s ease infinite; }
+
+  /* ══════════════════ SIDEBAR ══════════════════ */
+  #sidebar {
+    width: 82px; background: var(--grad-dark);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 0; position: fixed; top: 0; left: 0; height: 100vh; z-index: 50;
+    border-right: 1px solid rgba(255,255,255,.04);
+    animation: slideIn .5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  #sidebar::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(350px 200px at 50% 0%, rgba(124,58,237,.22), transparent 60%),
+      radial-gradient(200px 300px at 50% 100%, rgba(79,70,229,.08), transparent 60%);
+    pointer-events: none;
+  }
+  /* scan line effect */
+  #sidebar::after {
+    content: ''; position: absolute;
+    left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(124,58,237,.4), transparent);
+    animation: scanLine 6s linear infinite;
+    pointer-events: none; z-index: 1;
+  }
+
+  #sidebar .logo {
+    position: relative; z-index: 2;
+    width: 48px; height: 48px; border-radius: 16px;
+    background: var(--grad-1); background-size: 200% 200%;
+    animation: gradShift 8s ease infinite;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 28px rgba(79,70,229,.5), 0 2px 6px rgba(79,70,229,.3);
+    transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease;
+  }
+  #sidebar .logo:hover { transform: scale(1.08) rotate(-3deg); box-shadow: 0 12px 36px rgba(79,70,229,.6); }
+  #sidebar .logo span {
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    color: #fff; font-size: 17px; letter-spacing: -1px;
+  }
+
+  #sidebar .nav-list { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: 0 10px; position: relative; z-index: 2; }
+
+  .nav-item {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    padding: 11px 6px; border-radius: 16px; cursor: pointer;
+    transition: all .22s cubic-bezier(.2,.8,.2,1);
+    color: rgba(255,255,255,.4);
+    font-size: 9.5px; font-weight: 700; letter-spacing: .4px;
+    text-transform: uppercase;
+  }
+  .nav-item .nico {
+    width: 38px; height: 38px; border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+    transition: all .22s cubic-bezier(.2,.8,.2,1);
+  }
+  .nav-item:hover { color: rgba(255,255,255,.9); }
+  .nav-item:hover .nico { background: rgba(255,255,255,.1); transform: translateY(-2px) scale(1.05); border-color: rgba(255,255,255,.12); }
+  .nav-item.active { color: #fff; }
+  .nav-item.active .nico {
+    background: var(--grad-1); background-size: 200% 200%;
+    border-color: transparent;
+    box-shadow: 0 6px 20px rgba(79,70,229,.45), 0 2px 6px rgba(79,70,229,.25);
+    animation: gradShift 6s ease infinite;
+  }
+  .nav-item.active::before {
+    content: ''; position: absolute; left: -10px; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 24px;
+    background: linear-gradient(180deg, rgba(124,58,237,.0) 0%, #fff 40%, #fff 60%, rgba(79,70,229,.0) 100%);
+    border-radius: 4px;
+  }
+  .nav-badge {
+    width: 9px; height: 9px; border-radius: 50%; background: var(--hot);
+    position: absolute; top: 7px; right: 11px;
+    box-shadow: 0 0 0 2px #12121e, 0 0 14px rgba(239,68,68,.7);
+    animation: notifBounce 2s ease-in-out infinite, pulseSoft 1.4s ease-in-out infinite;
+  }
+
+  #sidebar .sidebar-stats {
+    margin-top: auto; display: flex; flex-direction: column; gap: 10px;
+    align-items: center; padding-bottom: 12px; position: relative; z-index: 2;
+  }
+  .sb-stat {
+    text-align: center;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 14px; padding: 9px 10px; min-width: 56px;
+    transition: all .2s ease;
+  }
+  .sb-stat:hover { background: rgba(255,255,255,.09); transform: scale(1.04); }
+  .sb-stat .n {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 700; color: #fff; line-height: 1;
+    animation: countUp .5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .sb-stat .l { font-size: 8px; color: rgba(255,255,255,.4); font-weight: 700; letter-spacing: .8px; margin-top: 4px; }
+
+  /* ══════════════════ MAIN ══════════════════ */
+  #main { margin-left: 82px; flex: 1; padding: 38px 44px 64px; max-width: 1220px; }
+
+  .page { display: none; }
+  .page.active { display: block; animation: fadeUp .4s cubic-bezier(.2,.8,.2,1) both; }
+
+  .page-header { margin-bottom: 36px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px; font-weight: 800; color: var(--ink);
+    letter-spacing: -1.5px; line-height: 1.05;
+    animation: fadeUp .45s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .page-title .accent {
+    background: var(--grad-1); background-size: 200% 200%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: gradShift 8s ease infinite;
+  }
+  .page-sub { font-size: 14px; color: var(--muted); margin-top: 8px; font-weight: 400; animation: fadeUp .45s .06s cubic-bezier(.2,.8,.2,1) both; }
+
+  .kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10.5px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1.4px;
+    margin-bottom: 10px;
+    animation: fadeIn .4s .02s ease both;
+  }
+  .kicker .dot-live {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+    animation: pulseRing 1.8s ease-out infinite;
+  }
+
+  .section-label {
+    font-size: 10.5px; font-weight: 700; color: #aaaabc;
+    text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px;
+  }
+
+  /* ══════════════════ STAT BOXES ══════════════════ */
+  .stat-box {
+    background: var(--grad-card); border: 1px solid rgba(255,255,255,.9);
+    border-radius: 18px; padding: 20px 24px; flex: 1; min-width: 0;
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.8);
+    transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease;
+    position: relative; overflow: hidden;
+  }
+  .stat-box::after {
+    content: ''; position: absolute; top: -30%; right: -20%;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(79,70,229,.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .stat-box:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px; font-weight: 700; color: var(--ink); line-height: 1;
+    letter-spacing: -1.5px;
+    animation: numFlip .4s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .stat-lbl { font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 6px; letter-spacing: .3px; }
+
+  .stat-mini {
+    background: var(--grad-card); border: 1px solid rgba(255,255,255,.9);
+    border-radius: 16px; padding: 16px 20px; flex: 1; text-align: center;
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.8);
+    transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease;
+  }
+  .stat-mini:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+  /* ══════════════════ SUGGESTIONS ══════════════════ */
+  #suggestions {
+    display: none; position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+    background: #fff; border: 1px solid rgba(79,70,229,.15);
+    border-radius: 16px; z-index: 40; overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    animation: pop .22s ease both;
+  }
+  .sugg-item {
+    padding: 12px 18px; cursor: pointer;
+    font-size: 13.5px; color: var(--ink-2);
+    border-bottom: 1px solid var(--line-2);
+    transition: background .12s ease, padding .15s ease, color .12s ease;
+    font-weight: 500;
+    animation: fadeLeft .2s ease both;
+  }
+  .sugg-item:last-child { border-bottom: none; }
+  .sugg-item:hover { background: var(--grad-soft); padding-left: 24px; color: var(--ink); }
+
+  /* ══════════════════ DISPENSER SLOT ══════════════════ */
+  .disp-slot {
+    position: relative; overflow: hidden;
+    border-radius: 22px; padding: 26px;
+    border: 1.5px solid var(--line-2);
+    background: var(--grad-card);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.9);
+    transition: all .28s cubic-bezier(.2,.8,.2,1);
+  }
+  .disp-slot::after {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 140px; height: 140px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(79,70,229,.04) 0%, transparent 70%);
+    pointer-events: none;
+    transition: opacity .3s ease;
+  }
+  .disp-slot:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,.9); }
+  .disp-slot.dispensing {
+    border-color: transparent;
+    background: linear-gradient(160deg, #fff 0%, #fffbf0 100%);
+    animation: dispenseGlow 2.5s ease-in-out infinite;
+  }
+  .disp-slot.dispensing::before {
+    content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px;
+    background: linear-gradient(135deg, var(--warm), #fbbf24, #f59e0b);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+    animation: borderPulse 2s ease-in-out infinite;
+  }
+  .slot-emoji {
+    font-size: 48px; margin-bottom: 12px; display: block; line-height: 1;
+    transition: transform .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .disp-slot:hover .slot-emoji { transform: scale(1.1) rotate(-5deg); }
+  .disp-slot.dispensing .slot-emoji { animation: float 2.8s ease-in-out infinite; }
+
+  /* ══════════════════ DOT LIVE ══════════════════ */
+  .dot-live {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+    display: inline-block; animation: pulseRing 1.8s ease-out infinite;
+  }
+
+  /* ══════════════════ TOAST ══════════════════ */
+  #toast {
+    position: fixed; top: 26px; left: 50%; transform: translateX(-50%);
+    background: rgba(10,10,18,.96); color: #fff;
+    padding: 14px 24px; border-radius: 16px; font-size: 13.5px; font-weight: 600;
+    z-index: 999; box-shadow: 0 16px 48px rgba(0,0,0,.3);
+    animation: toastIn .35s cubic-bezier(.2,.9,.3,1.2) both;
+    display: flex; align-items: center; gap: 12px;
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,.1);
+    max-width: 360px;
+  }
+  #toast .ic {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--grad-1); background-size: 200% 200%;
+    animation: gradShift 4s ease infinite;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #fff; font-weight: 800; flex-shrink: 0;
+  }
+
+  /* ══════════════════ GRIDS ══════════════════ */
+  .grid-2col { display: grid; grid-template-columns: 1fr 370px; gap: 26px; }
+  .grid-3col { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin-bottom: 26px; }
+  .flex-row  { display: flex; gap: 12px; }
+  .flex-col  { display: flex; flex-direction: column; gap: 8px; }
+
+  /* ══════════════════ MED ROWS ══════════════════ */
+  .med-row {
+    display: flex; align-items: center; padding: 13px 18px;
+    background: linear-gradient(to right, #fff, #fafaf9);
+    transition: background .15s ease, transform .15s ease;
+  }
+  .med-row:hover { background: linear-gradient(to right, #f8f7ff, #f5f4ff); transform: translateX(2px); }
+  .med-row + .med-row { border-top: 1px solid var(--line-2); }
+  .med-num {
+    width: 28px; height: 28px; border-radius: 9px;
+    background: var(--grad-1); background-size: 200% 200%;
+    animation: gradShift 8s ease infinite;
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; margin-right: 14px; flex-shrink: 0;
+    font-family: 'Syne', sans-serif;
+    box-shadow: 0 3px 10px rgba(79,70,229,.3);
+  }
+
+  /* ══════════════════ HISTORY ROWS ══════════════════ */
+  .row-list { max-height: 400px; overflow-y: auto; }
+  .row-list::-webkit-scrollbar { width: 4px; }
+  .row-list::-webkit-scrollbar-track { background: transparent; }
+  .row-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+  .list-row {
+    display: flex; align-items: center; gap: 13px; padding: 15px 24px;
+    border-bottom: 1px solid var(--line-2);
+    transition: background .15s ease, transform .15s ease;
+    animation: rowEnter .3s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .list-row:hover { background: #faf9f5; transform: translateX(3px); }
+
+  .avatar-sq {
+    width: 40px; height: 40px; border-radius: 13px;
+    background: var(--grad-soft); border: 1px solid rgba(79,70,229,.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+    transition: transform .2s ease, box-shadow .2s ease;
+    box-shadow: var(--shadow-xs);
+  }
+  .list-row:hover .avatar-sq { transform: scale(1.05); box-shadow: var(--shadow-sm); }
+
+  /* ══════════════════ EMPTY STATE ══════════════════ */
+  .empty {
+    padding: 56px 24px; text-align: center; color: #b8b8c8; font-size: 13.5px; font-weight: 500;
+  }
+  .empty .em-icon {
+    width: 68px; height: 68px; margin: 0 auto 16px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #f4f3ff, #fdf2f8);
+    border: 1px solid rgba(79,70,229,.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; animation: floatBig 3.5s ease-in-out infinite;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ══════════════════ FLOATING ORBS (background) ══════════════════ */
+  .orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(80px); pointer-events: none; z-index: 0;
+    animation: orbFloat 12s ease-in-out infinite;
+  }
+  .orb-1 { width: 500px; height: 500px; top: -200px; right: -100px; background: radial-gradient(circle, rgba(124,58,237,.06) 0%, transparent 70%); animation-delay: 0s; }
+  .orb-2 { width: 400px; height: 400px; bottom: -150px; left: 100px; background: radial-gradient(circle, rgba(6,182,212,.05) 0%, transparent 70%); animation-delay: -4s; }
+  .orb-3 { width: 300px; height: 300px; top: 40%; left: 40%; background: radial-gradient(circle, rgba(236,72,153,.04) 0%, transparent 70%); animation-delay: -8s; }
+
+  /* ══════════════════ SECTION DIVIDERS ══════════════════ */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--line-2), transparent);
+    margin: 20px 0;
+  }
+
+  /* ══════════════════ MOBILE RX ══════════════════ */
+  #rx-mobile-page {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: var(--canvas); overflow-y: auto; font-family: 'DM Sans', sans-serif;
+  }
+  #rx-mobile-page.show { display: block; animation: fadeIn .3s ease; }
+  .rx-top {
+    position: relative; overflow: hidden;
+    background: var(--grad-dark);
+    padding: 28px 24px 32px; color: #fff;
+    border-bottom-left-radius: 32px; border-bottom-right-radius: 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .rx-top::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(600px 300px at 120% 0%, rgba(124,58,237,.4), transparent 60%),
+      radial-gradient(500px 300px at -20% 120%, rgba(79,70,229,.3), transparent 60%),
+      radial-gradient(300px 200px at 50% 50%, rgba(6,182,212,.1), transparent 60%);
+    pointer-events: none;
+  }
+  .rx-top::after {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,.15), transparent);
+  }
+
+  /* ══════════════════ PHARMACY ORDER CARD ══════════════════ */
+  .ph-order-card {
+    padding: 0; margin: 18px; border-radius: 20px;
+    background: var(--grad-card);
+    border: 1px solid rgba(255,255,255,.9);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,255,255,.8);
+    transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease;
+    animation: fadeUp .4s cubic-bezier(.2,.8,.2,1) both;
+    overflow: hidden; position: relative;
+  }
+  .ph-order-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, #f97316, #fbbf24, #f97316);
+    background-size: 200% 100%;
+    animation: gradShift 3s ease infinite;
+  }
+  .ph-order-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,.9); }
+
+  .ph-card-body { padding: 22px 22px 0; }
+  .ph-card-footer { padding: 16px 22px 20px; background: linear-gradient(to bottom, transparent, rgba(249,115,22,.03)); border-top: 1px solid rgba(249,115,22,.08); margin-top: 16px; }
+
+  /* dispenser target buttons */
+  @keyframes dtReady { 0%,100%{box-shadow:0 0 0 0 rgba(79,70,229,.0)} 50%{box-shadow:0 0 0 6px rgba(79,70,229,.08)} }
+  @keyframes dtShine { 0%{left:-80%} 100%{left:110%} }
+
+  .disp-target-btn {
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: row; align-items: center; gap: 14px;
+    padding: 0 20px 0 0;
+    background: #fff; border: 1.5px solid var(--line);
+    border-radius: 20px; cursor: pointer; font-family: inherit; text-align: left;
+    transition: all .25s cubic-bezier(.2,.8,.2,1);
+    box-shadow: var(--shadow-sm);
+    animation: dtReady 3s ease-in-out infinite;
+    min-width: 0;
+  }
+  /* big number slab on the left */
+  .disp-target-btn .dt-slab {
+    width: 64px; height: 64px; flex-shrink: 0;
+    background: linear-gradient(145deg, #f4f3ff, #ede9ff);
+    border-right: 1.5px solid rgba(79,70,229,.1);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 18px 0 0 18px;
+    transition: background .22s ease, border-color .22s ease;
+    position: relative; overflow: hidden;
+  }
+  .disp-target-btn .dt-slab::after {
+    content: ''; position: absolute;
+    top: 0; left: -80%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+    transform: skewX(-20deg);
+    opacity: 0; transition: opacity .1s;
+  }
+  .disp-target-btn:hover .dt-slab::after { animation: dtShine .5s ease forwards; opacity: 1; }
+
+  .disp-target-btn .dt-num {
+    font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800;
+    color: var(--accent); line-height: 1; letter-spacing: -2px;
+    transition: all .22s ease;
+    position: relative; z-index: 1;
+  }
+  .disp-target-btn .dt-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .disp-target-btn .dt-label {
+    font-size: 12.5px; font-weight: 700; color: var(--ink);
+    transition: color .2s ease; letter-spacing: -.2px;
+  }
+  .disp-target-btn .dt-sub {
+    font-size: 10.5px; font-weight: 600; color: var(--muted);
+    letter-spacing: .2px;
+    transition: color .2s ease;
+  }
+  .disp-target-btn .dt-send {
+    width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; line-height: 1;
+    box-shadow: 0 4px 12px rgba(79,70,229,.3);
+    transition: all .22s cubic-bezier(.2,.8,.2,1);
+  }
+
+  .disp-target-btn:hover {
+    border-color: rgba(79,70,229,.35);
+    box-shadow: 0 10px 30px rgba(79,70,229,.2), 0 2px 6px rgba(79,70,229,.1);
+    transform: translateY(-3px);
+    background: linear-gradient(to right, #fff, #faf9ff);
+  }
+  .disp-target-btn:hover .dt-slab {
+    background: linear-gradient(145deg, #4f46e5, #7c3aed);
+    border-color: transparent;
+  }
+  .disp-target-btn:hover .dt-num { color: #fff; }
+  .disp-target-btn:hover .dt-label { color: var(--accent); }
+  .disp-target-btn:hover .dt-send { transform: translateX(3px) scale(1.1); box-shadow: 0 6px 18px rgba(79,70,229,.4); }
+  .disp-target-btn:active { transform: translateY(0) scale(.98); box-shadow: var(--shadow-xs); }
+
+  .full-warning {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; border-radius: 14px;
+    background: linear-gradient(135deg, #fff1f0, #fff5f5);
+    border: 1.5px solid #fecaca; color: #b91c1c;
+    font-size: 13px; font-weight: 700;
+    animation: pop .3s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  .full-warning .fw-icon {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(239,68,68,.3);
+  }
+
+  /* ══════════════════ QUEUE NUM ══════════════════ */
+  .q-num-badge {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800;
+    font-family: 'Syne', sans-serif;
+    flex-shrink: 0; letter-spacing: -.5px;
+  }
+  .q-num-active {
+    background: var(--grad-1); background-size: 200% 200%;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(79,70,229,.35);
+    animation: gradShift 8s ease infinite;
+  }
+  .q-num-done { background: #ecfdf5; color: var(--green); }
+
+  /* ══════════════════ QR CARD ══════════════════ */
+  .qr-receive-card {
+    display: flex; gap: 24px; align-items: flex-start;
+    animation: fadeUp .4s cubic-bezier(.2,.8,.2,1) both;
+  }
+  .qr-wrap {
+    flex-shrink: 0; width: 180px; height: 180px;
+    border-radius: 18px; overflow: hidden;
+    border: 1px solid var(--line-2); background: #fff; padding: 6px;
+    box-shadow: var(--shadow-sm);
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .qr-receive-card:hover .qr-wrap { transform: scale(1.03); box-shadow: var(--shadow-md); }
+
+  /* ══════════════════ MED CHIP ══════════════════ */
+  .med-chip {
+    display: inline-block;
+    background: linear-gradient(135deg, #f8f7ff, #f0f0ff);
+    border: 1px solid rgba(79,70,229,.12);
+    border-radius: 10px; padding: 4px 11px;
+    margin: 2px 4px 2px 0; font-size: 11.5px; font-weight: 600;
+    color: var(--ink-2);
+    transition: all .15s ease;
+  }
+  .med-chip:hover { background: linear-gradient(135deg, #ede9ff, #e8e0ff); border-color: rgba(79,70,229,.25); transform: translateY(-1px); }
+
+  /* ══════════════════ SECTION HEADER IN CARD ══════════════════ */
+  .card-header {
+    padding: 18px 24px; border-bottom: 1px solid var(--line-2);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-header-title { font-size: 14px; font-weight: 700; color: var(--ink); }
+  .card-header-sub { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .5px; text-transform: uppercase; }
+
+  /* ══════════════════ PROGRESS MINI ══════════════════ */
+  .progress-bar {
+    height: 4px; border-radius: 4px;
+    background: var(--line-2); overflow: hidden; margin-top: 10px;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 4px;
+    background: var(--grad-1); background-size: 200% 200%;
+    animation: gradShift 4s ease infinite;
+    transition: width .6s cubic-bezier(.2,.8,.2,1);
+  }
+
+  /* ══════════════════ RESPONSIVE ══════════════════ */
+  @media (max-width:860px) {
+    #main { padding: 24px 18px 48px; }
+    .grid-2col { grid-template-columns: 1fr; }
+    .grid-3col { grid-template-columns: 1fr; }
+    .page-title { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background ambient orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- ════ SIDEBAR ════ -->
+<div id="sidebar">
+  <div class="logo"><span>Rx</span></div>
+  <div class="nav-list" id="navList"></div>
+  <div class="sidebar-stats">
+    <div class="sb-stat">
+      <div id="sbOrders" class="n">0</div>
+      <div class="l">ORDERS</div>
+    </div>
+    <div class="sb-stat">
+      <div id="sbDone" class="n">0</div>
+      <div class="l">DONE</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MAIN ════ -->
+<div id="main">
+
+  <!-- ── DOCTOR PAGE ── -->
+  <div id="page-doctor" class="page active fade">
+    <div class="page-header">
+      <div>
+        <div class="kicker"><span class="dot-live"></span> LIVE · DOCTOR CONSOLE</div>
+        <div class="page-title">สั่งยาให้<span class="accent">ผู้ป่วย</span></div>
+        <div class="page-sub">กรอกข้อมูลและรายการยา ระบบจะส่งต่อให้เภสัชกรอัตโนมัติ</div>
+      </div>
+    </div>
+
+    <div class="grid-2col">
+      <!-- Form Card -->
+      <div class="card card-hover stagger">
+        <div class="section-label">ข้อมูลผู้ป่วย</div>
+        <div class="flex-row" style="margin-bottom:20px">
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:700;color:#666;margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase">ชื่อ-นามสกุล *</div>
+            <input class="inp" id="pName" placeholder="เช่น นายสมชาย ใจดี" />
+          </div>
+          <div style="width:155px">
+            <div style="font-size:12px;font-weight:700;color:#666;margin-bottom:8px;letter-spacing:.3px;text-transform:uppercase">เลข HN</div>
+            <input class="inp" id="pHN" placeholder="HN-XXXX" style="font-family:'JetBrains Mono',monospace;font-size:13px" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="section-label" style="margin-top:20px">เพิ่มรายการยา</div>
+        <div class="flex-row" style="margin-bottom:14px;position:relative;align-items:center">
+          <div style="flex:1.2;position:relative">
+            <input class="inp" id="medInput" placeholder="🔍  ค้นหายา..." autocomplete="off" oninput="showSuggestions()" />
+            <div id="suggestions"></div>
+          </div>
+          <div style="flex:1">
+            <input class="inp" id="medNote" placeholder="วิธีใช้..." />
+          </div>
+          <button class="btn btn-outline" onclick="addMed()" style="white-space:nowrap;height:49px;padding:0 20px">+ เพิ่ม</button>
+        </div>
+
+        <div id="medList" style="margin-bottom:24px"></div>
+
+        <button class="btn btn-gradient" onclick="submitOrder()" style="width:100%;padding:17px;font-size:15px;border-radius:16px">
+          ส่งคำสั่งยา&nbsp;&nbsp;<span style="font-size:20px;line-height:1">→</span>
+        </button>
+      </div>
+
+      <!-- Right column -->
+      <div class="stagger">
+        <!-- Stats mini card -->
+        <div class="card card-hover" style="margin-bottom:20px;padding:22px">
+          <div style="display:flex;justify-content:space-around;align-items:center">
+            <div style="text-align:center">
+              <div id="stat-total" class="stat-num">0</div>
+              <div class="stat-lbl">สั่งแล้ว</div>
+            </div>
+            <div style="width:1px;height:40px;background:var(--line-2)"></div>
+            <div style="text-align:center">
+              <div id="stat-pending" class="stat-num" style="color:#c2410c">0</div>
+              <div class="stat-lbl">รอจ่าย</div>
+            </div>
+            <div style="width:1px;height:40px;background:var(--line-2)"></div>
+            <div style="text-align:center">
+              <div id="stat-done" class="stat-num" style="color:#065f46">0</div>
+              <div class="stat-lbl">เสร็จ</div>
+            </div>
+          </div>
+          <!-- progress bar -->
+          <div id="doc-progress-wrap" style="display:none">
+            <div class="progress-bar" style="margin-top:16px">
+              <div id="doc-progress" class="progress-fill" style="width:0%"></div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center;font-weight:500">ความคืบหน้า</div>
+          </div>
+        </div>
+
+        <!-- History card -->
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="card-header">
+            <div class="card-header-title">ประวัติล่าสุด</div>
+            <div class="card-header-sub">REAL-TIME</div>
+          </div>
+          <div id="orderHistory" class="row-list">
+            <div class="empty"><div class="em-icon">📋</div>ยังไม่มีการสั่งยา</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PHARMACY PAGE ── -->
+  <div id="page-pharmacy" class="page">
+    <div class="page-header">
+      <div>
+        <div class="kicker"><span class="dot-live"></span> LIVE · PHARMACIST</div>
+        <div class="page-title">รายการ<span class="accent">รอจ่ายยา</span></div>
+        <div class="page-sub">เลือกตู้จ่ายให้แต่ละคำสั่ง ระบบจะอัปเดตคิวอัตโนมัติ</div>
+      </div>
+      <div class="flex-row stagger">
+        <div class="stat-mini" style="min-width:120px">
+          <div id="ph-pending" class="stat-num" style="color:#c2410c">0</div>
+          <div class="stat-lbl">รอจ่าย</div>
+        </div>
+        <div class="stat-mini" style="min-width:120px">
+          <div id="ph-ready" class="stat-num" style="color:#065f46">0</div>
+          <div class="stat-lbl">ช่องว่าง</div>
+        </div>
+      </div>
+    </div>
+    <div id="pendingOrders" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:0;"></div>
+    <div id="inProgressSection"></div>
+  </div>
+
+  <!-- ── QUEUE PAGE ── -->
+  <div id="page-queue" class="page">
+    <div class="page-header">
+      <div>
+        <div class="kicker"><span class="dot-live"></span> LIVE · QUEUE</div>
+        <div class="page-title">แสดง<span class="accent">คิวผู้ป่วย</span></div>
+        <div class="page-sub">เรียกคิวอัตโนมัติเมื่อยาพร้อมจ่าย</div>
+      </div>
+    </div>
+    <div class="flex-row stagger" id="activeQueueBoard" style="margin-bottom:22px"></div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="card-header">
+        <div class="card-header-title">รายการคิวทั้งหมด</div>
+        <div class="card-header-sub">AUTO UPDATE</div>
+      </div>
+      <div id="queueTable"></div>
+    </div>
+  </div>
+
+  <!-- ── DISPENSER PAGE ── -->
+  <div id="page-dispenser" class="page">
+    <div class="page-header">
+      <div>
+        <div class="kicker"><span class="dot-live"></span> LIVE · DISPENSING UNITS</div>
+        <div class="page-title">ตู้จ่ายยา<span class="accent">อัตโนมัติ</span></div>
+        <div class="page-sub">ทั้งหมด 3 ช่อง — ติดตามสถานะแบบเรียลไทม์</div>
+      </div>
+    </div>
+    <div class="grid-3col stagger" id="dispenserSlots"></div>
+    <div class="flex-row stagger" id="dispenserStats"></div>
+  </div>
+
+  <!-- ── RECEIVE PAGE ── -->
+  <div id="page-receive" class="page">
+    <div class="page-header">
+      <div>
+        <div class="kicker"><span class="dot-live"></span> QR · PATIENT PICKUP</div>
+        <div class="page-title">QR <span class="accent">รับยา</span></div>
+        <div class="page-sub">ให้คนไข้สแกน QR เพื่อดูรายการยาบนมือถือ</div>
+      </div>
+    </div>
+    <div id="receiveOrderList"></div>
+  </div>
+</div>
+
+<!-- ════ MOBILE RX VIEW ════ -->
+<div id="rx-mobile-page">
+  <div style="min-height:100vh;display:flex;flex-direction:column">
+
+    <div class="rx-top">
+      <div style="position:relative;display:flex;align-items:center;gap:12px;margin-bottom:28px">
+        <div style="width:40px;height:40px;background:var(--grad-1);background-size:200% 200%;animation:gradShift 6s ease infinite;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:'Syne',sans-serif;box-shadow:0 8px 24px rgba(79,70,229,.55);color:#fff">Rx</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;font-family:'Syne',sans-serif">ระบบรับยาอัตโนมัติ</div>
+          <div style="font-size:10px;opacity:.5;letter-spacing:.8px;text-transform:uppercase;font-weight:600;margin-top:2px">Smart Pharmacy System</div>
+        </div>
+      </div>
+
+      <div style="position:relative;display:flex;align-items:flex-end;gap:20px;margin-bottom:6px">
+        <div>
+          <div style="font-size:10px;font-weight:700;opacity:.45;letter-spacing:1.4px;margin-bottom:8px;text-transform:uppercase">คิวของคุณ</div>
+          <div id="rx-queue-num" style="font-size:88px;font-weight:800;line-height:.9;font-family:'Syne',sans-serif;letter-spacing:-4px;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.5) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;animation:popBig .6s cubic-bezier(.2,.9,.3,1.3) both">—</div>
+        </div>
+        <div style="padding-bottom:14px;flex:1">
+          <div id="rx-dispenser-label" style="font-size:14px;font-weight:700;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(12px);border-radius:12px;padding:9px 16px;margin-bottom:10px;text-align:center;transition:all .3s ease">ตู้ —</div>
+          <div id="rx-status-badge" style="font-size:12.5px;font-weight:700;text-align:center;opacity:.9">รอจ่ายยา</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Patient info card -->
+    <div class="card" style="margin:20px 18px 0;padding:22px 24px;border-radius:20px">
+      <div style="font-size:10px;font-weight:700;color:#aaaabc;letter-spacing:1.4px;margin-bottom:10px;text-transform:uppercase">ข้อมูลผู้ป่วย</div>
+      <div id="rx-name" style="font-size:24px;font-weight:800;color:var(--ink);margin-bottom:5px;letter-spacing:-.6px;font-family:'Syne',sans-serif"></div>
+      <div id="rx-hn" style="font-size:12.5px;color:#aaaabc;font-family:'JetBrains Mono',monospace;font-weight:500"></div>
+    </div>
+
+    <!-- Med list -->
+    <div style="margin:16px 18px 0">
+      <div style="font-size:10px;font-weight:700;color:#aaaabc;letter-spacing:1.4px;margin-bottom:14px;text-transform:uppercase">รายการยา</div>
+      <div id="rx-med-list" style="display:flex;flex-direction:column;gap:11px"></div>
+    </div>
+
+    <!-- Confirm button -->
+    <div style="padding:28px 18px 40px;margin-top:auto">
+      <button id="rx-confirm-btn" class="btn btn-gradient" style="width:100%;padding:22px;font-size:17px;letter-spacing:-.3px;border-radius:20px">
+        ✓ รับยา
+      </button>
+      <div id="rx-confirm-note" style="text-align:center;font-size:12px;color:#aaaabc;margin-top:14px;font-weight:500">กดปุ่มเพื่อยืนยันรับยาจากตู้</div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+// ── Firebase ──
+import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, set, update, onValue, push, get }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const FB_URL = 'https://pharmacy-test-476ed-default-rtdb.asia-southeast1.firebasedatabase.app';
+const app = initializeApp({ databaseURL: FB_URL }, 'pharmacy');
+const db  = getDatabase(app);
+
+// ── Local state ──
+const MEDS = ["Paracetamol 500mg","Amoxicillin 250mg","Ibuprofen 400mg","Cetirizine 10mg","Omeprazole 20mg","Metformin 500mg","Amlodipine 5mg","Atorvastatin 10mg","Simvastatin 20mg","Losartan 50mg"];
+
+let currentPage = 'doctor';
+let orders      = [];
+let queue       = [];
+let dispensers  = [
+  { id:1, status:'ready', patient:null, meds:[], orderId:null },
+  { id:2, status:'ready', patient:null, meds:[], orderId:null },
+  { id:3, status:'ready', patient:null, meds:[], orderId:null },
+];
+let medList    = [];
+let toastTimer = null;
+let mobileOrderId = null;
+
+const $ = id => document.getElementById(id);
+function timeNow() { return new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}); }
+function pendingCount()  { return orders.filter(o=>o.status==='pending').length; }
+function doneCount()     { return orders.filter(o=>o.status==='done').length; }
+function assignedCount() { return orders.filter(o=>o.status==='assigned').length; }
+function readyCount()    { return dispensers.filter(d=>d.status==='ready').length; }
+
+function toast(msg, type='ok') {
+  const existing = document.getElementById('toast');
+  if (existing) existing.remove();
+  const icon = type==='err'?'✕':type==='info'?'i':'✓';
+  const colors = { ok:'linear-gradient(135deg,#10b981,#059669)', err:'linear-gradient(135deg,#ef4444,#dc2626)', info:'linear-gradient(135deg,#4f46e5,#7c3aed)' };
+  const el = document.createElement('div');
+  el.id = 'toast';
+  el.innerHTML = `<span class="ic" style="background:${colors[type]||colors.ok}">${icon}</span>${msg}`;
+  document.body.appendChild(el);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{
+    const t=document.getElementById('toast');
+    if(t){ t.style.animation='toastOut .3s ease forwards'; setTimeout(()=>t.remove(),300); }
+  }, 2800);
+}
+
+function startListeners() {
+  onValue(ref(db,'orders'), snap => { const val=snap.val()||{}; orders=Object.values(val); render(); });
+  onValue(ref(db,'queue'),  snap => { const val=snap.val()||{}; queue=Object.values(val);  render(); });
+  onValue(ref(db,'dispensers'), snap => {
+    const val=snap.val();
+    if(val) dispensers=[val['1'],val['2'],val['3']].filter(Boolean);
+    render();
+  });
+}
+
+async function fbSetOrder(o)     { await set(ref(db,`orders/${o.id}`), o); }
+async function fbSetQueue(q)     { await set(ref(db,`queue/${q.id}`), q); }
+async function fbSetDispenser(d) { await set(ref(db,`dispensers/${d.id}`), d); }
+
+async function initDispensers() {
+  const snap = await get(ref(db,'dispensers'));
+  if (!snap.exists()) {
+    await set(ref(db,'dispensers'), {
+      1:{id:1,status:'ready',patient:null,meds:[],orderId:null},
+      2:{id:2,status:'ready',patient:null,meds:[],orderId:null},
+      3:{id:3,status:'ready',patient:null,meds:[],orderId:null},
+    });
+  }
+}
+
+const navItems = [
+  { id:'doctor',    icon:'🩺', label:'หมอ' },
+  { id:'pharmacy',  icon:'💊', label:'เภสัช' },
+  { id:'queue',     icon:'🎫', label:'คิว' },
+  { id:'dispenser', icon:'📦', label:'ตู้ยา' },
+  { id:'receive',   icon:'📲', label:'รับยา' },
+];
+
+function buildNav() {
+  const nl = $('navList');
+  if (!nl) return;
+  nl.innerHTML = '';
+  navItems.forEach((n,i) => {
+    const div = document.createElement('div');
+    div.className = 'nav-item' + (currentPage===n.id?' active':'');
+    div.onclick = () => setPage(n.id);
+    div.style.animationDelay = (i * .05) + 's';
+    const hasBadge = n.id==='pharmacy' && pendingCount()>0;
+    div.innerHTML = `<div class="nico">${n.icon}</div><span>${n.label}</span>${hasBadge?'<div class="nav-badge"></div>':''}`;
+    nl.appendChild(div);
+  });
+  if ($('sbOrders')) $('sbOrders').textContent = orders.length;
+  if ($('sbDone'))   $('sbDone').textContent   = doneCount();
+}
+
+function setPage(id) {
+  currentPage = id;
+  navItems.forEach(n => {
+    const p = document.getElementById('page-'+n.id);
+    if (!p) return;
+    p.classList.toggle('active', n.id===id);
+  });
+  buildNav();
+  render();
+}
+
+function showSuggestions() {
+  const inp=$('medInput'); const box=$('suggestions');
+  if (!inp||!box) return;
+  const q = inp.value.trim().toLowerCase();
+  const matches = MEDS.filter(m=>m.toLowerCase().includes(q));
+  if (!q||!matches.length) { box.style.display='none'; return; }
+  box.style.display='block';
+  box.innerHTML = matches.map((m,i)=>
+    `<div class="sugg-item" style="animation-delay:${i*.04}s" onclick="selectMed('${m}')">${m}</div>`
+  ).join('');
+}
+window.showSuggestions = showSuggestions;
+
+function selectMed(name) {
+  $('medInput').value = name;
+  $('suggestions').style.display = 'none';
+}
+window.selectMed = selectMed;
+
+function addMed() {
+  const name = $('medInput').value.trim();
+  if (!name) return;
+  medList.push({ name, note: $('medNote').value.trim() });
+  $('medInput').value = '';
+  $('medNote').value  = '';
+  $('suggestions').style.display = 'none';
+  renderMedList();
+}
+window.addMed = addMed;
+
+function removeMed(i) { medList.splice(i,1); renderMedList(); }
+window.removeMed = removeMed;
+
+function renderMedList() {
+  const el = $('medList');
+  if (!el) return;
+  if (!medList.length) { el.innerHTML=''; return; }
+  el.innerHTML = `<div style="border:1.5px solid rgba(79,70,229,.12);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-xs)">` +
+    medList.map((m,i)=>`
+      <div class="med-row pop" style="animation-delay:${i*.06}s">
+        <div class="med-num">${i+1}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:700;color:var(--ink)">${m.name}</div>
+          ${m.note?`<div style="font-size:12px;color:var(--muted);margin-top:2px">${m.note}</div>`:''}
+        </div>
+        <button onclick="removeMed(${i})" style="background:none;border:none;cursor:pointer;color:#d0d0d8;font-size:18px;padding:6px 8px;border-radius:8px;transition:all .15s ease;line-height:1" onmouseover="this.style.color='#ef4444';this.style.background='#fff0f0'" onmouseout="this.style.color='#d0d0d8';this.style.background='none'">✕</button>
+      </div>`
+    ).join('') + `</div>`;
+}
+
+async function submitOrder() {
+  const name = $('pName').value.trim();
+  if (!name||!medList.length) { toast('กรอกชื่อและรายการยาก่อนนะครับ','err'); return; }
+  const hn = $('pHN').value.trim() || `HN-${String(orders.length+1).padStart(4,'0')}`;
+  const id = Date.now();
+  const o  = { id, patient:name, hn, meds:[...medList], time:timeNow(), status:'pending' };
+  await fbSetOrder(o);
+  $('pName').value=''; $('pHN').value='';
+  medList=[];
+  renderMedList();
+  toast(`ส่งคำสั่งยา — ${o.patient} สำเร็จ`);
+}
+window.submitOrder = submitOrder;
+
+async function assign(orderId, dId) {
+  const o = orders.find(x=>x.id===orderId);
+  if (!o) return;
+  const updated = {...o, status:'assigned'};
+  const disp = {id:dId, status:'dispensing', patient:o.patient, meds:o.meds, orderId};
+  const qNum = queue.length+1;
+  const q = {id:orderId, patient:o.patient, hn:o.hn, dispenser:dId, time:timeNow(), status:'waiting', qNum};
+  await Promise.all([fbSetOrder(updated), fbSetDispenser(disp), fbSetQueue(q)]);
+  toast(`กำหนดช่อง ${dId} → ${o.patient}`);
+}
+window.assign = assign;
+
+async function complete(dId) {
+  const d = dispensers.find(x=>x.id===dId);
+  if (!d) return;
+  const disp = {id:dId, status:'ready', patient:null, meds:[], orderId:null};
+  const writes = [fbSetDispenser(disp)];
+  if (d.orderId) {
+    const o = orders.find(x=>x.id===d.orderId);
+    if (o) writes.push(fbSetOrder({...o, status:'done'}));
+    const q = queue.find(x=>x.id===d.orderId);
+    if (q) writes.push(fbSetQueue({...q, status:'done'}));
+  }
+  await Promise.all(writes);
+  toast(`ช่อง ${dId} จ่ายยาเสร็จแล้ว`,'info');
+}
+window.complete = complete;
+
+async function mobileConfirmReceive() {
+  if (!mobileOrderId) return;
+  const o = orders.find(x=>x.id===mobileOrderId);
+  if (!o||o.status==='pending'||o.status==='done') return;
+  const writes = [fbSetOrder({...o, status:'done'})];
+  const d = dispensers.find(x=>x.orderId===mobileOrderId);
+  if (d) writes.push(fbSetDispenser({...d, status:'ready', patient:null, meds:[], orderId:null}));
+  const q = queue.find(x=>x.id===mobileOrderId);
+  if (q) writes.push(fbSetQueue({...q, status:'done'}));
+  await Promise.all(writes);
+  toast('✓ รับยาเสร็จแล้ว ขอบคุณครับ','ok');
+}
+window.mobileConfirmReceive = mobileConfirmReceive;
+
+function makeQRUrl(o) {
+  const qEntry = queue.find(q=>q.id===o.id);
+  const disp   = dispensers.find(d=>d.orderId===o.id);
+  const payload = {
+    id:o.id, p:o.patient, hn:o.hn,
+    q:qEntry?qEntry.qNum:null, d:disp?disp.id:null, st:o.status,
+    meds:o.meds.map(m=>m.name.slice(0,30)+(m.note?'|'+m.note.slice(0,20):''))
+  };
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  return location.href.split('#')[0]+'#rx='+encoded;
+}
+
+function checkHash() {
+  const hash = location.hash;
+  if (!hash.startsWith('#rx=')) { $('rx-mobile-page').classList.remove('show'); return; }
+  try {
+    const raw = hash.slice(4);
+    const decoded = JSON.parse(decodeURIComponent(escape(atob(raw))));
+    const o = {
+      id:decoded.id, patient:decoded.p, hn:decoded.hn,
+      status:decoded.st||'pending',
+      meds:(decoded.meds||[]).map(s=>{const[name,note=''] = s.split('|'); return{name,note};}),
+      _qNum:decoded.q, _dispId:decoded.d,
+    };
+    const live = orders.find(x=>x.id===o.id);
+    showMobileRx(live?{...o,...live,_qNum:o._qNum,_dispId:o._dispId}:o);
+  } catch(e) { $('rx-mobile-page').classList.remove('show'); }
+}
+window.addEventListener('hashchange', checkHash);
+
+function showMobileRx(o) {
+  mobileOrderId = o.id;
+  $('rx-mobile-page').classList.add('show');
+  const disp   = dispensers.find(d=>d.orderId===o.id);
+  const qEntry = queue.find(q=>q.id===o.id);
+  const qNum   = qEntry?qEntry.qNum:(o._qNum||'—');
+  const dispId = disp?disp.id:(o._dispId||'—');
+  const st     = (orders.find(x=>x.id===o.id)||o).status;
+
+  $('rx-name').textContent            = o.patient;
+  $('rx-hn').textContent              = o.hn;
+  $('rx-queue-num').textContent       = qNum;
+  $('rx-dispenser-label').textContent = dispId!=='—'?`ตู้ที่ ${dispId}`:'รอกำหนดตู้';
+
+  const statusText = { pending:'⏳ รอจ่ายยา', assigned:'✅ ยาพร้อมแล้ว — กดรับได้เลย', done:'✓ รับยาแล้ว' };
+  $('rx-status-badge').textContent = statusText[st]||'⏳ รอจ่ายยา';
+
+  $('rx-med-list').innerHTML = o.meds.map((m,i)=>`
+    <div class="card" style="padding:15px 18px;display:flex;gap:14px;align-items:flex-start;animation:fadeUp .35s ${i*.08}s cubic-bezier(.2,.8,.2,1) both">
+      <div class="med-num" style="margin-top:2px">${i+1}</div>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--ink)">${m.name}</div>
+        ${m.note?`<div style="font-size:12px;color:var(--muted);margin-top:3px">${m.note}</div>`:''}
+      </div>
+    </div>`).join('');
+
+  const btn  = $('rx-confirm-btn');
+  const note = $('rx-confirm-note');
+  if (st==='done') {
+    btn.textContent='✓ รับยาแล้ว'; btn.style.background='#b4b4c0'; btn.style.boxShadow='none'; btn.style.cursor='default'; btn.style.animation='none';
+    note.textContent='คุณรับยาไปแล้ว ขอบคุณครับ 🙏';
+  } else if (st==='assigned') {
+    btn.textContent='✓ รับยา'; btn.style.background=''; btn.style.boxShadow=''; btn.style.cursor='pointer'; btn.style.animation='';
+    note.textContent='กดปุ่มเพื่อยืนยันรับยาจากตู้';
+  } else {
+    btn.textContent='⏳ รอเภสัชกรจัดยา'; btn.style.background='#b4b4c0'; btn.style.boxShadow='none'; btn.style.cursor='default'; btn.style.animation='none';
+    note.textContent='ยาของคุณกำลังถูกจัดเตรียม กรุณารอสักครู่';
+  }
+}
+
+function render() {
+  buildNav();
+  renderDoctor();
+  renderPharmacy();
+  renderQueue();
+  renderDispenser();
+  renderReceive();
+  const mp = $('rx-mobile-page');
+  if (mp&&mp.classList.contains('show')&&mobileOrderId) {
+    const o = orders.find(x=>x.id===mobileOrderId);
+    if (o) showMobileRx(o);
+  }
+}
+
+function renderDoctor() {
+  const total=$('stat-total'), pend=$('stat-pending'), don=$('stat-done');
+  const hist=$('orderHistory');
+  if (!total||!pend||!don||!hist) return;
+  total.textContent = orders.length;
+  pend.textContent  = pendingCount();
+  don.textContent   = doneCount();
+
+  // progress bar
+  const pw=$('doc-progress-wrap'), pb=$('doc-progress');
+  if (pw&&pb&&orders.length) {
+    pw.style.display='block';
+    const pct = Math.round((doneCount()/orders.length)*100);
+    pb.style.width = pct+'%';
+  } else if (pw) { pw.style.display='none'; }
+
+  if (!orders.length) { hist.innerHTML=`<div class="empty"><div class="em-icon">📋</div>ยังไม่มีการสั่งยา</div>`; return; }
+  hist.innerHTML = [...orders].reverse().map((o,i)=>`
+    <div class="list-row" style="animation-delay:${i*.05}s">
+      <div class="avatar-sq">🧑</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.patient}</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px"><span style="font-family:'JetBrains Mono',monospace">${o.hn}</span> · ${o.meds.length} ยา · ${o.time}</div>
+      </div>
+      <span class="tag tag-${o.status}">${o.status==='pending'?'รอ':o.status==='assigned'?'จ่าย':'เสร็จ'}</span>
+    </div>`).join('');
+}
+
+function renderPharmacy() {
+  const el=$('pendingOrders');
+  if (!el) return;
+  if ($('ph-pending')) $('ph-pending').textContent=pendingCount();
+  if ($('ph-ready'))   $('ph-ready').textContent=readyCount();
+  const pending = orders.filter(o=>o.status==='pending');
+  if (!pending.length) {
+    el.style.display='block';
+    el.innerHTML=`<div class="empty" style="padding:72px 24px"><div class="em-icon" style="font-size:36px">✨</div><div style="font-size:15px;font-weight:600;margin-bottom:6px">ไม่มีรายการรอ</div><div style="font-size:13px">ทุกอย่างพร้อมแล้ว 🎉</div></div>`;
+    return;
+  }
+  el.style.display='grid';
+  const readyDisp = dispensers.filter(d=>d.status==='ready');
+  const dispIcons = { 1:'🟦', 2:'🟧', 3:'🟩' };
+
+  el.innerHTML = pending.map((o,i)=>`
+    <div class="ph-order-card" style="animation-delay:${i*.08}s">
+
+      <!-- Top stripe accent already via ::before -->
+
+      <div class="ph-card-body">
+        <!-- Header row -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:13px;flex:1;min-width:0">
+            <div style="width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1.5px solid rgba(245,158,11,.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 4px 12px rgba(245,158,11,.15)">🧑</div>
+            <div style="min-width:0">
+              <div style="font-size:15.5px;font-weight:800;color:var(--ink);letter-spacing:-.3px;font-family:'Syne',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.patient}</div>
+              <div style="font-size:11.5px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px">${o.hn}</span>
+                <span style="width:3px;height:3px;border-radius:50%;background:var(--line);display:inline-block"></span>
+                <span>${o.time}</span>
+              </div>
+            </div>
+          </div>
+          <span class="tag tag-pending" style="flex-shrink:0">รอจ่าย</span>
+        </div>
+
+        <!-- Med count badge -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;color:#aaaabc;text-transform:uppercase;letter-spacing:1px">รายการยา</div>
+          <div style="font-size:11px;font-weight:700;background:linear-gradient(135deg,#fff7ed,#fef3c7);color:#c2410c;border:1px solid #fed7aa;border-radius:999px;padding:2px 9px">${o.meds.length} รายการ</div>
+        </div>
+
+        <!-- Med chips -->
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px">
+          ${o.meds.map(m=>`<span class="med-chip" style="display:flex;align-items:center;gap:5px"><span style="width:5px;height:5px;border-radius:50%;background:linear-gradient(135deg,#f97316,#fbbf24);flex-shrink:0"></span><b>${m.name}</b>${m.note?`<span style="color:var(--muted);font-weight:400">· ${m.note}</span>`:''}</span>`).join('')}
+        </div>
+      </div>
+
+      <!-- Footer: dispenser buttons -->
+      <div class="ph-card-footer">
+        <div style="font-size:10px;font-weight:700;color:#aaaabc;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">ส่งไปยังตู้</div>
+        ${readyDisp.length ? `
+        <div style="display:flex;flex-direction:column;gap:9px">
+          ${readyDisp.map(d=>`
+          <button onclick="assign(${o.id},${d.id})" class="disp-target-btn">
+            <div class="dt-slab"><span class="dt-num">${d.id}</span></div>
+            <div class="dt-text">
+              <span class="dt-label">ตู้ที่ ${d.id}</span>
+              <span class="dt-sub">ว่าง · พร้อมรับยา</span>
+            </div>
+            <div class="dt-send">→</div>
+          </button>`).join('')}
+        </div>` : `
+        <div class="full-warning">
+          <div class="fw-icon">⚠️</div>
+          <div>
+            <div>ตู้เต็มทั้งหมด</div>
+            <div style="font-size:11px;font-weight:500;opacity:.7;margin-top:2px">รอให้ตู้ว่างก่อนจัดยาได้เลย</div>
+          </div>
+        </div>`}
+      </div>
+    </div>`).join('');
+}
+
+function renderQueue() {
+  const el=$('queueTable'), stats=$('activeQueueBoard');
+  if (!el||!stats) return;
+  const waiting = queue.filter(q=>q.status==='waiting').length;
+  const done    = queue.filter(q=>q.status==='done').length;
+  stats.innerHTML = `
+    <div class="stat-mini"><div class="stat-num">${queue.length}</div><div class="stat-lbl">ทั้งหมด</div></div>
+    <div class="stat-mini"><div class="stat-num" style="color:#c2410c">${waiting}</div><div class="stat-lbl">รอรับ</div></div>
+    <div class="stat-mini"><div class="stat-num" style="color:#065f46">${done}</div><div class="stat-lbl">รับแล้ว</div></div>`;
+  if (!queue.length) { el.innerHTML=`<div class="empty"><div class="em-icon">🎫</div>ยังไม่มีคิว</div>`; return; }
+  el.innerHTML = [...queue].reverse().map((q,i)=>`
+    <div class="list-row" style="opacity:${q.status==='done'?.5:1};animation-delay:${i*.05}s">
+      <div class="q-num-badge ${q.status==='done'?'q-num-done':'q-num-active'}">${q.qNum||'—'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:700;color:var(--ink)">${q.patient}</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px">ตู้ ${q.dispenser} · ${q.time}</div>
+      </div>
+      <span class="tag tag-${q.status==='done'?'done':'assigned'}">${q.status==='done'?'รับแล้ว':'รอรับ'}</span>
+    </div>`).join('');
+}
+
+function renderDispenser() {
+  const el=$('dispenserSlots'), stats=$('dispenserStats');
+  if (!el||!stats) return;
+  el.innerHTML = dispensers.map((d,i)=>{
+    const isReady=d.status==='ready', isDispensing=d.status==='dispensing';
+    const statusLabel=isReady?'ว่าง':isDispensing?'กำลังจัดยา':'พร้อม';
+    const statusBg=isReady?'linear-gradient(135deg,#ecfdf5,#d1fae5)':isDispensing?'linear-gradient(135deg,#fffbeb,#fef3c7)':'linear-gradient(135deg,#eef2ff,#e0e7ff)';
+    const statusColor=isReady?'#065f46':isDispensing?'#92400e':'#3730a3';
+    const statusDot=isReady?'#10b981':isDispensing?'#f59e0b':'#4f46e5';
+    const emo=isReady?'📦':isDispensing?'⚙️':'✅';
+    return `
+    <div class="disp-slot ${isDispensing?'dispensing':''}" style="animation:fadeUp .5s ${i*.1}s cubic-bezier(.2,.8,.2,1) both">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase">ตู้ที่ ${d.id}</div>
+        <div style="font-size:11px;font-weight:700;background:${statusBg};color:${statusColor};padding:5px 12px;border-radius:999px;display:flex;align-items:center;gap:5px">
+          <span style="width:6px;height:6px;border-radius:50%;background:${statusDot};${isDispensing?'animation:pulseSoft 1.4s ease infinite':''}"></span>
+          ${statusLabel}
+        </div>
+      </div>
+      <div class="slot-emoji">${emo}</div>
+      ${d.patient?`
+        <div style="font-size:15px;font-weight:800;color:var(--ink);margin-bottom:4px;letter-spacing:-.3px;font-family:'Syne',sans-serif">${d.patient}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:18px;min-height:18px;line-height:1.5">${(d.meds||[]).map(m=>m.name).join(', ')}</div>
+        <button onclick="complete(${d.id})" class="btn btn-success" style="font-size:13.5px;padding:13px 18px;border-radius:14px;width:100%">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
+          จ่ายยาเสร็จ
+        </button>`
+        :`<div style="font-size:13px;color:#c8c8d8;margin-bottom:18px;font-weight:500;font-style:italic">รอคำสั่งจ่ายยา...</div>`}
+    </div>`;
+  }).join('');
+  const ready = dispensers.filter(d=>d.status==='ready').length;
+  stats.innerHTML = `
+    <div class="stat-mini"><div class="stat-num" style="color:#065f46">${ready}</div><div class="stat-lbl">ว่าง</div></div>
+    <div class="stat-mini"><div class="stat-num" style="color:#92400e">${dispensers.length-ready}</div><div class="stat-lbl">ใช้งาน</div></div>`;
+}
+
+function renderReceive() {
+  const el=$('receiveOrderList');
+  if (!el) return;
+  const active=orders.filter(o=>o.status!=='done');
+  const done=orders.filter(o=>o.status==='done');
+  const all=[...active,...done];
+  if (!all.length) {
+    el.innerHTML=`<div class="card"><div class="empty"><div class="em-icon">📋</div>ยังไม่มีรายการ — สั่งยาก่อนเลยครับ</div></div>`;
+    return;
+  }
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:20px">` +
+    all.map((o,i)=>`
+      <div class="card card-hover qr-receive-card" style="animation-delay:${i*.08}s;opacity:${o.status==='done'?.55:1}">
+        <div id="qr-disp-${o.id}" class="qr-wrap"></div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+            <div style="font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-.5px;font-family:'Syne',sans-serif">${o.patient}</div>
+            <span class="tag tag-${o.status==='done'?'done':o.status==='assigned'?'assigned':'pending'}">${o.status==='done'?'รับแล้ว':o.status==='assigned'?'กำลังจ่าย':'รอจ่าย'}</span>
+          </div>
+          <div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:14px">${o.hn} · ${o.time}</div>
+          <div style="margin-bottom:16px;line-height:1.8">${o.meds.map(m=>`<span class="med-chip">${m.name}</span>`).join('')}</div>
+          <div style="font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:7px;padding:10px 14px;background:linear-gradient(135deg,#f0f0ff,#faf0ff);border-radius:12px;width:fit-content">
+            <span style="width:7px;height:7px;border-radius:50%;background:var(--accent);animation:pulseAccent 1.8s ease-out infinite;display:inline-block;flex-shrink:0"></span>
+            ให้คนไข้สแกน QR นี้ด้วยโทรศัพท์
+          </div>
+        </div>
+      </div>`).join('') + `</div>`;
+
+  all.forEach(o=>{
+    const wrap=document.getElementById(`qr-disp-${o.id}`);
+    if (wrap&&!wrap.hasChildNodes()) {
+      try {
+        new QRCode(wrap, {text:makeQRUrl(o), width:168, height:168, correctLevel:QRCode.CorrectLevel.L});
+        const canvas=wrap.querySelector('canvas');
+        if (canvas) { canvas.style.width='168px'; canvas.style.height='168px'; canvas.style.borderRadius='10px'; }
+      } catch(e){}
+    }
+  });
+}
+
+await initDispensers();
+startListeners();
+checkHash();
+
+document.getElementById('rx-confirm-btn').addEventListener('click', mobileConfirmReceive);
+</script>
+</body>
+</html>
